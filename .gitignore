@@ -1,1 +1,23 @@
+# Go binaries
+go_server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test and build artifacts
+*.test
+*.out
+/bin/
+/vendor/
+
+# VSCode settings
 .vscode/
+
+# Editor temporary files
+*.swp
+*~
+
+# macOS
+.DS_Store
