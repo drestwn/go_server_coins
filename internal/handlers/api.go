@@ -1,19 +1,34 @@
 package handlers
 
 import (
-	"go_server/internal/middleware"
-
-	"github.com/go-chi/chi"
-	chimiddle "github.com/go-chi/chi/middleware"
+    "go_server/internal/middleware"
+    "net/http"
+    "github.com/go-chi/chi"
+    chimiddle "github.com/go-chi/chi/middleware"
 )
 
-func Handler(r *chi.Mux) {
-	// global middleware
-	r.Use(chimiddle.StripSlashes) // Ignores trailing slashes, e.g., "google.com/a/b/" ignores slash after b
+type CoinBalanceParams struct {
+    Username string `schema:"username"`
+}
 
+type CoinBalanceResponse struct {
+    Balance int64 `json:"Balance"`
+    Code    int   `json:"Code"`
+}
+
+func InternalErrorHandler(w http.ResponseWriter) {
+    w.WriteHeader(http.StatusInternalServerError)
+    w.Write([]byte("Internal server error"))
+}
+
+func Handler(r *chi.Mux) {
+    // Global middleware
+    r.Use(chimiddle.StripSlashes)
 	r.Route("/account", func(router chi.Router) {
-		// middleware for /account route
-		router.Use(middleware.Authorization)
-		router.Get("/coins", GetCoinBalance)
-	})
+        // Public endpoint (no authorization)
+        router.Post("/coins", CreateCoinBalance)
+
+        // Protected endpoint (requires authorization)
+        router.With(middleware.Authorization).Get("/coins", GetCoinBalance)
+    })
 }

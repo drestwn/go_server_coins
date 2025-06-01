@@ -1,0 +1,38 @@
+{
+    "coin_data": {
+        "alex": {
+            "Coins": 100,
+            "Username": "alex"
+        },
+        "bob": {
+            "Coins": 150,
+            "Username": "bob"
+        },
+        "bob2": {
+            "Coins": 150,
+            "Username": "bob2"
+        },
+        "jason": {
+            "Coins": 200,
+            "Username": "jason"
+        },
+        "marie": {
+            "Coins": 300,
+            "Username": "marie"
+        }
+    },
+    "login_data": {
+        "alex": {
+            "AuthToken": "",
+            "Username": "alex"
+        },
+        "jason": {
+            "AuthToken": "",
+            "Username": "jason"
+        },
+        "marie": {
+            "AuthToken": "",
+            "Username": "marie"
+        }
+    }
+}
