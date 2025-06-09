@@ -29,12 +29,24 @@ func (d *mockDB) SetupDatabase() error {
     d.mutex.Lock()
     defer d.mutex.Unlock()
 
-    // Initialize maps
-    d.coinData = make(map[string]CoinDetails)
-    d.loginData = make(map[string]LoginDetails)
+    // Only initialize maps if they haven't been set yet
+    if d.coinData == nil {
+        d.coinData = make(map[string]CoinDetails)
+    }
+    if d.loginData == nil {
+        d.loginData = make(map[string]LoginDetails)
+    }
 
-    // Set the file path (relative to internal/tools/)
-    d.dataFile = "../../mock_data.json"
+    // Set the file path dynamically
+    d.dataFile = os.Getenv("MOCK_DATA_FILE")
+    if d.dataFile == "" {
+        cwd, err := os.Getwd()
+        if err != nil {
+            log.Errorf("Failed to get current working directory: %v", err)
+            return fmt.Errorf("get current working directory: %w", err)
+        }
+        d.dataFile = filepath.Join(cwd, "mock_data.json")
+    }
 
     // Resolve and log the absolute path
     absPath, err := filepath.Abs(d.dataFile)
@@ -47,7 +59,6 @@ func (d *mockDB) SetupDatabase() error {
     // Check if the file exists
     if _, err := os.Stat(absPath); os.IsNotExist(err) {
         log.Warnf("mock_data.json does not exist at %s, will create it", absPath)
-        // If file doesn't exist, initialize with empty data and create the file
         mockData := MockData{
             CoinData:  d.coinData,
             LoginData: d.loginData,
@@ -57,7 +68,6 @@ func (d *mockDB) SetupDatabase() error {
             log.Errorf("Failed to marshal mock data: %v", err)
             return fmt.Errorf("marshal mock data: %w", err)
         }
-        // Ensure the parent directory exists
         if err := os.MkdirAll(filepath.Dir(absPath), 0755); err != nil {
             log.Errorf("Failed to create parent directories for mock_data.json: %v", err)
             return fmt.Errorf("create parent dirs: %w", err)
@@ -85,25 +95,17 @@ func (d *mockDB) SetupDatabase() error {
     var mockData MockData
     if len(fileData) > 0 {
         if err := json.Unmarshal(fileData, &mockData); err != nil {
-            log.Warnf("Failed to unmarshal mock_data.json, initializing empty maps: %v", err)
-            mockData = MockData{
-                CoinData:  make(map[string]CoinDetails),
-                LoginData: make(map[string]LoginDetails),
-            }
+            log.Warnf("Failed to unmarshal mock_data.json content: %s, error: %v", string(fileData), err)
+            // Keep existing data instead of reinitializing with empty maps
+        } else {
+            d.coinData = mockData.CoinData
+            d.loginData = mockData.LoginData
         }
     } else {
-        log.Warn("mock_data.json is empty, initializing empty maps")
-        mockData = MockData{
-            CoinData:  make(map[string]CoinDetails),
-            LoginData: make(map[string]LoginDetails),
-        }
+        log.Warn("mock_data.json is empty, using existing maps")
     }
 
-    // Assign the loaded data to the mockDB instance
-    d.coinData = mockData.CoinData
-    d.loginData = mockData.LoginData
-
-    // Ensure maps are initialized if JSON was empty or invalid
+    // Ensure maps are initialized only if still nil after loading
     if d.coinData == nil {
         d.coinData = make(map[string]CoinDetails)
     }
