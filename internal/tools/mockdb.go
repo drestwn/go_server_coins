@@ -209,3 +209,45 @@ func (d *mockDB) CreateUserLoginDetails(username string, details LoginDetails) e
 
     return nil
 }
+
+func (d *mockDB) DeleteUserCoins(username string) error {
+    time.Sleep(time.Second * 1)
+    d.mutex.Lock()
+    defer d.mutex.Unlock()
+
+    log.Infof("Before deleting user %s: coinData=%v", username, d.coinData)
+    if _, exists := d.coinData[username]; !exists {
+        log.Errorf("User %s not found in coinData", username)
+        return errors.New("user not found")
+    }
+
+    delete(d.coinData, username)
+    log.Infof("After deleting user %s: coinData=%v", username, d.coinData)
+
+    if err := d.saveToFile(); err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func (d *mockDB) DeleteUserLoginDetails(username string) error {
+    time.Sleep(time.Second * 1)
+    d.mutex.Lock()
+    defer d.mutex.Unlock()
+
+    log.Infof("Before deleting user %s: loginData=%v", username, d.loginData)
+    if _, exists := d.loginData[username]; !exists {
+        log.Errorf("User %s not found in loginData", username)
+        return errors.New("user not found")
+    }
+
+    delete(d.loginData, username)
+    log.Infof("After deleting user %s: loginData=%v", username, d.loginData)
+
+    if err := d.saveToFile(); err != nil {
+        return err
+    }
+
+    return nil
+}

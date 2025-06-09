@@ -20,10 +20,6 @@
             "Coins": 150,
             "Username": "bob5"
         },
-        "bob6": {
-            "Coins": 150,
-            "Username": "bob6"
-        },
         "jason": {
             "Coins": 200,
             "Username": "jason"
@@ -41,10 +37,6 @@
         "bob2": {
             "AuthToken": "ss",
             "Username": "bob2"
-        },
-        "bob6": {
-            "AuthToken": "bob6",
-            "Username": "bob6"
         },
         "jason": {
             "AuthToken": "",

@@ -30,5 +30,7 @@ func Handler(r *chi.Mux) {
 
         // Protected endpoint (requires authorization)
         router.With(middleware.Authorization).Get("/coins", GetCoinBalance)
+        router.With(middleware.Authorization).Delete("/coins", DeleteCoinBalance)
+
     })
 }
