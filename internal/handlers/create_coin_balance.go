@@ -76,7 +76,7 @@ func CreateCoinBalance(w http.ResponseWriter, r *http.Request) {
         InternalErrorHandler(w) // Removed "api."
         return
     }
-// Create new login details
+    // Create new login details
     newLoginDetails := tools.LoginDetails{
         AuthToken: req.AuthToken,
         Username:  req.Username,

@@ -20,6 +20,8 @@ GetUserLoginDetails(username string) *LoginDetails
     CreateUserCoins(username string, details CoinDetails) error
     CreateUserLoginDetails(username string, details LoginDetails) error
     SetupDatabase() error
+	DeleteUserCoins(username string) error         // New method
+    DeleteUserLoginDetails(username string) error // New method
 }
 
 func NewDatabase() (*DatabaseInterface, error) {
