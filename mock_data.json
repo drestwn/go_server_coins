@@ -12,6 +12,18 @@
             "Coins": 150,
             "Username": "bob2"
         },
+        "bob4": {
+            "Coins": 150,
+            "Username": "bob4"
+        },
+        "bob5": {
+            "Coins": 150,
+            "Username": "bob5"
+        },
+        "bob6": {
+            "Coins": 150,
+            "Username": "bob6"
+        },
         "jason": {
             "Coins": 200,
             "Username": "jason"
@@ -23,8 +35,16 @@
     },
     "login_data": {
         "alex": {
-            "AuthToken": "",
+            "AuthToken": "aaa",
             "Username": "alex"
+        },
+        "bob2": {
+            "AuthToken": "ss",
+            "Username": "bob2"
+        },
+        "bob6": {
+            "AuthToken": "bob6",
+            "Username": "bob6"
         },
         "jason": {
             "AuthToken": "",

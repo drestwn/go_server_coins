@@ -10,6 +10,7 @@ import (
 type CreateCoinBalanceRequest struct {
     Username string `json:"username"`
     Coins    int64  `json:"coins"` // Changed to int64 to match tools.CoinDetails
+    AuthToken string `json:"auth_token"`
 }
 
 type CreateCoinBalanceResponse struct {
@@ -20,7 +21,7 @@ type CreateCoinBalanceResponse struct {
 func CreateCoinBalance(w http.ResponseWriter, r *http.Request) {
     // Ensure the request method is POST
     if r.Method != http.MethodPost {
- http.Error(w, "Method not allowed (only post)", http.StatusMethodNotAllowed)
+     http.Error(w, "Method not allowed (only post)", http.StatusMethodNotAllowed)
         return
     }
 
@@ -55,21 +56,39 @@ func CreateCoinBalance(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "User already exists", http.StatusConflict)
         return
     }
-
+// Check if user already exists in login_data
+    if existingLogin := (*database).GetUserLoginDetails(req.Username); existingLogin != nil {
+        log.Errorf("User %s already exists in login_data", req.Username)
+        http.Error(w, "User already exists", http.StatusConflict)
+        return
+    }
     // Create new coin details
-    newDetails := tools.CoinDetails{
+    newCoinDetails := tools.CoinDetails{
         Username: req.Username,
         Coins:    req.Coins,
     }
+   
 
     // Add to database
-    err = (*database).CreateUserCoins(req.Username, newDetails) // Fixed typo "databse" to "database"
+    err = (*database).CreateUserCoins(req.Username, newCoinDetails) // Fixed typo "databse" to "database"
     if err != nil {
         log.Errorf("Failed to create coin data: %v", err)
         InternalErrorHandler(w) // Removed "api."
         return
     }
+// Create new login details
+    newLoginDetails := tools.LoginDetails{
+        AuthToken: req.AuthToken,
+        Username:  req.Username,
+    }
 
+    // Add to login_data
+    err = (*database).CreateUserLoginDetails(req.Username, newLoginDetails)
+    if err != nil {
+        log.Errorf("Failed to create login details: %v", err)
+        InternalErrorHandler(w)
+        return
+    }
     // Prepare response
     response := CreateCoinBalanceResponse{
         Message: "Coin data created successfully", // Added comma
